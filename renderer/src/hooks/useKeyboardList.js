@@ -1,25 +1,29 @@
 import { useState, useEffect } from 'react'
 
-export default () => {
-  const [pos, setPos] = useState(1)
-  const increment = () => setPos(pos + 1)
-  useEffect(() => {
-    window.document.addEventListener('keydown', event => onKeyPress(event))
-    return () => {
-      window.document.removeEventListener('keydown', onKeyPress)
-    }
-  }, [])
+export default (max, callback, ref) => {
+  const [pos, setPos] = useState(0)
+  useEffect(
+    () => {
+      ref.current.focus()
+      setPos(0)
+    },
+    [max, ref]
+  )
 
   const onKeyPress = event => {
     switch (event.key) {
       case 'ArrowDown':
-        increment()
+        setPos(prev => (prev < max ? prev + 1 : prev))
         break
       case 'ArrowUp':
+        setPos(prev => (prev > 0 ? prev - 1 : prev))
+        break
+      case 'Enter':
+        callback(pos)
         break
       // no default
     }
   }
 
-  return [pos, () => {}]
+  return [pos, setPos, onKeyPress]
 }

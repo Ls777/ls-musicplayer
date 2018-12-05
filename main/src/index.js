@@ -18,6 +18,7 @@ const createWindow = () => {
     backgroundColor: '#F7F7F7',
     height: 860,
     width: 1280,
+    frame: false,
     transparent: false,
     titleBarStyle: 'hidden',
     webPreferences: {
