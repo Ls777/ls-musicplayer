@@ -18,9 +18,7 @@ export default () => {
   useDisableKeyboardScrolling()
   return (
     <div>
-      <QueueSection>
-        <Queue />
-      </QueueSection>
+      <Queue />
       <section>
         <Player />
       </section>

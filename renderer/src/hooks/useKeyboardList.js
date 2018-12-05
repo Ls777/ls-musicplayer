@@ -10,6 +10,19 @@ export default (max, callback, ref) => {
     [max, ref]
   )
 
+  useEffect(
+    () => {
+      const listHeight = 230
+      const posHeight = pos * 21
+      if (posHeight > ref.current.scrollTop + listHeight) {
+        ref.current.scrollTop = posHeight - listHeight
+      } else if (posHeight < ref.current.scrollTop) {
+        ref.current.scrollTop = posHeight
+      }
+    },
+    [pos, max]
+  )
+
   const onKeyPress = event => {
     switch (event.key) {
       case 'ArrowDown':

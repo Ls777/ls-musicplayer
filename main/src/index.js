@@ -148,7 +148,7 @@ app.on('activate', () => {
 ipcMain.on('open-child-window', (event, arg) => {
   let child = new BrowserWindow({
     parent: mainWindow,
-    modal: true,
+    modal: false,
     show: false
   })
   child.loadURL(

@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react'
 import { useStore, useAction } from 'easy-peasy'
 import useKeyboardList from '../hooks/useKeyboardList'
+import PerfectScrollbar from 'react-perfect-scrollbar'
 import styled from 'styled-components'
+import 'react-perfect-scrollbar/dist/css/styles.css'
 
 export default () => {
   const queueRef = useRef(null)
@@ -13,22 +15,30 @@ export default () => {
     queueRef
   )
   return (
-    <section onKeyDown={onKeyPress} tabIndex='0' ref={queueRef}>
+    <div onKeyDown={onKeyPress} tabIndex='0'>
       <h3>Queue {selectPos}</h3>
-      <ul onKeyPress={console.log}>
-        {queue.map((item, idx) => (
-          <QueueItem
-            onDoubleClick={() => skipTo(item.id)}
-            onClick={() => setSelectPos(idx)}
-            key={item.id}
-            current={idx === queuePos}
-            select={idx === selectPos}
-          >
-            <Title>{item.title}</Title> <Artist>{item.artist}</Artist>
-          </QueueItem>
-        ))}
-      </ul>
-    </section>
+      <PerfectScrollbar
+        containerRef={ref => (queueRef.current = ref)}
+        style={{ height: '300px', backgroundColor: '#f2e9e1' }}
+        option={{ handlers: ['click-rail', 'drag-thumb', 'wheel', 'touch'] }}
+      >
+        <ul onKeyPress={console.log}>
+          {queue.map((item, idx) => (
+            <QueueItem
+              onDoubleClick={() => skipTo(item.id)}
+              onClick={e => {
+                setSelectPos(idx)
+              }}
+              key={item.id}
+              current={idx === queuePos}
+              select={idx === selectPos}
+            >
+              <Title>{item.title}</Title> <Artist>{item.artist}</Artist>
+            </QueueItem>
+          ))}
+        </ul>
+      </PerfectScrollbar>
+    </div>
   )
 }
 

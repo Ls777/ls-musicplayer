@@ -1,13 +1,15 @@
 import React from 'react'
 import { useStore, useAction } from 'easy-peasy'
 import SeekBar from './SeekBar'
+import styled from 'styled-components'
 
 import {
   MdPlayArrow,
   MdPause,
   MdStop,
   MdSkipNext,
-  MdSkipPrevious
+  MdSkipPrevious,
+  MdLibraryMusic
 } from 'react-icons/md'
 
 const { ipcRenderer, remote } = window.require('electron')
@@ -32,21 +34,35 @@ export default () => {
           }`}
       </div>
       <SeekBar />
-      <button onClick={prev}>
+      <Button onClick={prev}>
         <MdSkipPrevious />
-      </button>
-      <button onClick={isPlaying ? pause : play}>
+      </Button>
+      <Button onClick={isPlaying ? pause : play}>
         {isPlaying ? <MdPause /> : <MdPlayArrow />}
-      </button>
-      <button onClick={stop}>
+      </Button>
+      <Button onClick={stop}>
         <MdStop />
-      </button>
-      <button onClick={next}>
+      </Button>
+      <Button onClick={next}>
         <MdSkipNext />
-      </button>
-      <button onClick={() => openChildWindow('library')}>
-        open child window
-      </button>
+      </Button>
+      <Button onClick={() => openChildWindow('library')}>
+        <MdLibraryMusic />
+      </Button>
     </>
   )
 }
+
+const Button = styled.button`
+  background-color: #f2e9e1;
+  border: none;
+  color: #1c140d;
+  padding: 0.5em 1em;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+
+  :hover {
+    background-color: #cbe86b;
+  }
+`
