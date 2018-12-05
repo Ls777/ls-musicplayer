@@ -1,0 +1,6 @@
+main/node_modules/
+main/build/
+renderer/node_modules
+renderer/build
+library.db
+
