@@ -17,18 +17,28 @@ const openChildWindow = route => {
 export default () => {
   useDisableKeyboardScrolling()
   return (
-    <div>
+    <App>
       <Queue />
       <section>
         <Player />
       </section>
-    </div>
+    </App>
   )
 }
 
+const App = styled.div`
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`
+
 const QueueSection = styled.section`
-  height: 300px;
-  max-height: 300px;
-  overflow-y: scroll;
+  height: 100px;
   background-color: #f2e9e1;
+`
+
+const PlayerSection = styled.section`
+  height: 200px;
 `

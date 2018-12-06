@@ -60,22 +60,26 @@ function setStoreQueue () {
 
 function setStoreStatus () {
   const { setStatus } = store.dispatch.player
-  const { setDuration } = store.dispatch.seekbar
+  const { setDuration, setElapsed } = store.dispatch.seekbar
   mpc.status
     .status()
     .then(status => {
       setStatus(status.state)
-      setDuration(status.duration)
+      if (status.duration) {
+        setDuration(status.duration)
+      } else {
+        setElapsed(0)
+      }
     })
     .catch(console.log)
 }
 
 setInterval(() => {
   const { isPlaying } = store.getState().player
-  const { setPosition } = store.dispatch.seekbar
+  const { setElapsed } = store.dispatch.seekbar
   if (isPlaying) {
-    mpc.status.status().then(status => setPosition(status.elapsed))
+    mpc.status.status().then(status => setElapsed(status.elapsed))
   }
-}, 100)
+}, 200)
 
 export default mpc

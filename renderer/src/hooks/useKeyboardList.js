@@ -12,7 +12,7 @@ export default (max, callback, ref) => {
 
   useEffect(
     () => {
-      const listHeight = 230
+      const listHeight = ref.current.clientHeight - 70
       const posHeight = pos * 21
       if (posHeight > ref.current.scrollTop + listHeight) {
         ref.current.scrollTop = posHeight - listHeight

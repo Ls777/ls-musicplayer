@@ -7,9 +7,9 @@ export default {
     if (state.duration === 0) {
       return 0
     }
-    return Math.round((state.elapsed / state.duration) * 100)
+    return (state.elapsed / state.duration) * 100
   }),
-  setPosition: (state, payload) => {
+  setElapsed: (state, payload) => {
     state.elapsed = payload
   },
   setDuration: (state, payload) => {
@@ -19,9 +19,9 @@ export default {
     const toSeconds = (payload / 100) * getState().seekbar.duration
     if (!getState().player.isPlaying) {
       await dispatch.player.play()
-      mpc.playback.seekCur(toSeconds)
+      await mpc.playback.seekCur(toSeconds)
     } else {
-      mpc.playback.seekCur(toSeconds)
+      await mpc.playback.seekCur(toSeconds)
     }
   })
 }

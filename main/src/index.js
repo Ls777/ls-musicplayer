@@ -16,10 +16,10 @@ let mainWindow
 const createWindow = () => {
   mainWindow = new BrowserWindow({
     backgroundColor: '#F7F7F7',
-    height: 860,
+    height: 500,
     width: 1280,
     frame: false,
-    transparent: false,
+    transparent: true,
     titleBarStyle: 'hidden',
     webPreferences: {
       // <--- (1) Additional preferences

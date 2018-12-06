@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useStore, useAction } from 'easy-peasy'
 import useKeyboardList from '../hooks/useKeyboardList'
 import PerfectScrollbar from 'react-perfect-scrollbar'
@@ -7,6 +7,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 
 export default () => {
   const queueRef = useRef(null)
+  const scrollRef = useRef(null)
   const { queue, queuePos } = useStore(state => state.queue)
   const { play, skipTo } = useAction(dispatch => dispatch.player)
   const [selectPos, setSelectPos, onKeyPress] = useKeyboardList(
@@ -14,12 +15,13 @@ export default () => {
     pos => skipTo(queue[pos].id),
     queueRef
   )
+  // useEffect(() => scrollRef.current.updateScroll())
+
   return (
-    <div onKeyDown={onKeyPress} tabIndex='0'>
-      <h3>Queue {selectPos}</h3>
+    <QueueWrapper onKeyDown={onKeyPress} tabIndex='0'>
       <PerfectScrollbar
+        ref={ref => (scrollRef.current = ref)}
         containerRef={ref => (queueRef.current = ref)}
-        style={{ height: '300px', backgroundColor: '#f2e9e1' }}
         option={{ handlers: ['click-rail', 'drag-thumb', 'wheel', 'touch'] }}
       >
         <ul onKeyPress={console.log}>
@@ -38,9 +40,17 @@ export default () => {
           ))}
         </ul>
       </PerfectScrollbar>
-    </div>
+    </QueueWrapper>
   )
 }
+
+const QueueWrapper = styled.div`
+  flex-shrink: 1;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f2e9e1;
+`
 
 const QueueItem = styled.li`
   font-weight: ${({ current }) => (current ? 'bold' : 'normal')};

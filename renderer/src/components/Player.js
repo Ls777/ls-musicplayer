@@ -26,32 +26,38 @@ export default () => {
   )
   return (
     <>
-      <h3>Player</h3>
-      <div>
-        {currentTrack &&
-          `${currentTrack.artist} - ${currentTrack.album} - ${
-            currentTrack.title
-          }`}
-      </div>
+      <PlayerWrapper>
+        <h3>Player</h3>
+        <div>
+          {currentTrack &&
+            `${currentTrack.artist} - ${currentTrack.album} - ${
+              currentTrack.title
+            }`}
+        </div>
+        <Button onClick={prev}>
+          <MdSkipPrevious />
+        </Button>
+        <Button onClick={isPlaying ? pause : play}>
+          {isPlaying ? <MdPause /> : <MdPlayArrow />}
+        </Button>
+        <Button onClick={stop}>
+          <MdStop />
+        </Button>
+        <Button onClick={next}>
+          <MdSkipNext />
+        </Button>
+        <Button onClick={() => openChildWindow('library')}>
+          <MdLibraryMusic />
+        </Button>
+      </PlayerWrapper>
       <SeekBar />
-      <Button onClick={prev}>
-        <MdSkipPrevious />
-      </Button>
-      <Button onClick={isPlaying ? pause : play}>
-        {isPlaying ? <MdPause /> : <MdPlayArrow />}
-      </Button>
-      <Button onClick={stop}>
-        <MdStop />
-      </Button>
-      <Button onClick={next}>
-        <MdSkipNext />
-      </Button>
-      <Button onClick={() => openChildWindow('library')}>
-        <MdLibraryMusic />
-      </Button>
     </>
   )
 }
+
+const PlayerWrapper = styled.div`
+  padding: 1em;
+`
 
 const Button = styled.button`
   background-color: #f2e9e1;

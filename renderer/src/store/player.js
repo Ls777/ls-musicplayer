@@ -12,9 +12,9 @@ export default {
 
   play: effect(async (dispatch, payload, getState, { mpc }) => {
     if (getState().player.isStopped) {
-      mpc.playback.playId(getState().queue.currentTrack.id)
+      await mpc.playback.playId(getState().queue.currentTrack.id)
     } else {
-      mpc.playback.play()
+      await mpc.playback.play()
     }
     dispatch.player.setStatus('play')
   }),
@@ -33,7 +33,7 @@ export default {
     dispatch.queue.setQueuePos(
       getState().queue.queue.findIndex(el => el.id === payload)
     )
-    mpc.playback.playId(payload)
+    await mpc.playback.playId(payload)
     dispatch.player.setStatus('play')
   }),
 
