@@ -2,18 +2,22 @@ import { useState, useEffect } from 'react'
 
 export default (max, callback, ref) => {
   const [pos, setPos] = useState(0)
-  useEffect(
+  /* useEffect(
     () => {
       ref.current.focus()
       setPos(0)
     },
     [max, ref]
-  )
+  ) */
 
-  useEffect(
+  /* useEffect(
     () => {
+      const itemHeight = ref.current.firstChild.firstChild
+        ? ref.current.firstChild.firstChild.clientHeight
+        : 0
+      console.log(itemHeight)
       const listHeight = ref.current.clientHeight - 70
-      const posHeight = pos * 21
+      const posHeight = pos * itemHeight
       if (posHeight > ref.current.scrollTop + listHeight) {
         ref.current.scrollTop = posHeight - listHeight
       } else if (posHeight < ref.current.scrollTop) {
@@ -21,7 +25,7 @@ export default (max, callback, ref) => {
       }
     },
     [pos, max]
-  )
+  ) */
 
   const onKeyPress = event => {
     switch (event.key) {

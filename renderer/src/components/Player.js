@@ -27,13 +27,6 @@ export default () => {
   return (
     <>
       <PlayerWrapper>
-        <h3>Player</h3>
-        <div>
-          {currentTrack &&
-            `${currentTrack.artist} - ${currentTrack.album} - ${
-              currentTrack.title
-            }`}
-        </div>
         <Button onClick={prev}>
           <MdSkipPrevious />
         </Button>
@@ -56,7 +49,9 @@ export default () => {
 }
 
 const PlayerWrapper = styled.div`
-  padding: 1em;
+  padding: 1em 1em 0em;
+  display: flex;
+  justify-content: center;
 `
 
 const Button = styled.button`

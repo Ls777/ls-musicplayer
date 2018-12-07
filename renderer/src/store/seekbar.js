@@ -3,6 +3,7 @@ import { select, effect } from 'easy-peasy'
 export default {
   elapsed: 0,
   duration: 0,
+  remaining: select(state => state.duration - state.elapsed),
   percentage: select(state => {
     if (state.duration === 0) {
       return 0

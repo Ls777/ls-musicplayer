@@ -7,6 +7,7 @@ import SeekBar from './components/SeekBar'
 import Queue from './components/Queue'
 import Library from './components/Library'
 import Player from './components/Player'
+import TitleBar from './components/TitleBar'
 
 const { ipcRenderer, remote } = window.require('electron')
 
@@ -18,6 +19,7 @@ export default () => {
   useDisableKeyboardScrolling()
   return (
     <App>
+      <TitleBar />
       <Queue />
       <section>
         <Player />

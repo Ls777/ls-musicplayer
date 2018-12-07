@@ -24,6 +24,10 @@ export default {
     mpc.database.findAdd(payload)
   }),
 
+  removeFromQueue: effect(async (dispatch, payload, getState, { mpc }) => {
+    mpc.database.findAdd(payload)
+  }),
+
   replaceQueue: effect(async (dispatch, payload, getState, { mpc }) => {
     await mpc.currentPlaylist.clear()
     await mpc.database.findAdd(payload)

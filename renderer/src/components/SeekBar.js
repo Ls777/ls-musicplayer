@@ -35,7 +35,7 @@ const Wrapper = styled.div`
 
 const Slider = styled.input`
   flex: 2;
-  padding: 10px 20px;
+  padding: 1em;
   height: 5px;
   -webkit-appearance: none;
   overflow: hidden;
