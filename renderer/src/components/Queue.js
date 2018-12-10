@@ -1,53 +1,161 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useStore, useAction } from 'easy-peasy'
-import useKeyboardList from '../hooks/useKeyboardList'
-import PerfectScrollbar from 'react-perfect-scrollbar'
+import { List, ArrowKeyStepper, AutoSizer } from 'react-virtualized'
+import MyArrowStepper from '../lib/MyArrowKeyStepper'
+import PerfectScrollbar from 'perfect-scrollbar'
+import 'perfect-scrollbar/css/perfect-scrollbar.css'
 import styled from 'styled-components'
-import 'react-perfect-scrollbar/dist/css/styles.css'
 import { timeDisplay } from '../lib/utilities'
 
-export default () => {
-  const queueRef = useRef(null)
-  const scrollRef = useRef(null)
-  const { queue, queuePos } = useStore(state => state.queue)
-  const { play, skipTo } = useAction(dispatch => dispatch.player)
-  const [selectPos, setSelectPos, onKeyPress] = useKeyboardList(
-    queue.length - 1,
-    pos => skipTo(queue[pos].id),
-    queueRef
-  )
-  // useEffect(() => scrollRef.current.updateScroll())
-  console.log('whats goin on')
-  console.log('queue')
+const renderer = ({
+  index,
+  key,
+  style,
+  isVisible,
+  isScrolling,
+  focused,
+  selected,
+  item,
+  onClick,
+  callback
+}) => {
+  const baseStyle = {
+    height: '30px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '0 1em'
+  }
+
+  const durationStyle = {
+    flexShrink: '0',
+    width: '2em'
+  }
+
+  const titleStyle = {
+    flex: '1 1',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    padding: '0 1em'
+  }
+
+  const artistStyle = {
+    flexShrink: '0'
+  }
+
+  let itemStyle = focused
+    ? { backgroundColor: '#CBE86B', ...baseStyle }
+    : { backgroundColor: '#f2e9e1', ...baseStyle }
+  itemStyle = selected
+    ? { fontWeight: 'bold', ...itemStyle }
+    : { fontWeight: 'normal', ...itemStyle }
+
   return (
-    <QueueWrapper onKeyDown={onKeyPress} tabIndex='0'>
-      <PerfectScrollbar
-        ref={ref => (scrollRef.current = ref)}
-        containerRef={ref => (queueRef.current = ref)}
-        style={{ padding: '0' }}
-        option={{ handlers: ['click-rail', 'drag-thumb', 'wheel', 'touch'] }}
+    <div
+      key={key}
+      style={style}
+      onClick={onClick}
+      onDoubleClick={() => callback(item.id)}
+      onKeyDown={e => console.log(e.key)}
+    >
+      <div style={itemStyle}>
+        {selected && isVisible && !isScrolling ? (
+          <DynamicDuration />
+        ) : (
+          <span style={durationStyle}>{timeDisplay(item.duration)}</span>
+        )}
+        <span style={titleStyle}>{item.title}</span>
+        <span style={artistStyle}>{item.artist}</span>
+      </div>
+    </div>
+  )
+}
+
+const onKeyDown = ({ e, scrollToRow, scrollToColumn }) => {}
+
+export default () => {
+  const [scrollToIndex, setScrollToIndex] = useState(0)
+  useEffect(() => {
+    const ps = new PerfectScrollbar('.outerScroll')
+  }, [])
+
+  const { play, skipTo } = useAction(dispatch => dispatch.player)
+
+  const { queue: list, queuePos } = useStore(state => state.queue)
+
+  const onKeyDown = ({ event, scrollToRow, scrollToColumn }) => {
+    if (event.key === 'Enter') {
+      skipTo(list[scrollToRow].id)
+    }
+  }
+
+  return (
+    <QueueWrapper>
+      <MyArrowStepper
+        isControlled
+        columnCount={1}
+        rowCount={list.length}
+        mode={'cells'}
+        className={'keyStepper'}
+        onScrollToChange={({ scrollToRow }) => setScrollToIndex(scrollToRow)}
+        scrollToRow={scrollToIndex}
+        onKeyDown={onKeyDown}
       >
-        <List
-          queue={queue}
-          queuePos={queuePos}
-          selectPos={selectPos}
-          setSelectPos={setSelectPos}
-          skipTo={skipTo}
-        />
-      </PerfectScrollbar>
+        {({ onSectionRendered, scrollToRow }) => (
+          <AutoSizer>
+            {({ height, width }) => (
+              <List
+                className={'outerScroll'}
+                rowCount={list.length}
+                height={height}
+                width={width}
+                rowHeight={30}
+                onSectionRendered={onSectionRendered}
+                scrollToIndex={scrollToRow}
+                rowRenderer={({
+                  index,
+                  key,
+                  style,
+                  isScrolling,
+                  isVisible,
+                  parent
+                }) =>
+                  renderer({
+                    key,
+                    style,
+                    focused: index === scrollToIndex,
+                    selected: index === queuePos,
+                    isVisible,
+                    isScrolling,
+                    item: list[index],
+                    onClick: () => setScrollToIndex(index),
+                    callback: skipTo
+                  })
+                }
+              />
+            )}
+          </AutoSizer>
+        )}
+      </MyArrowStepper>
     </QueueWrapper>
   )
 }
 
-const List = ({ queue, queuePos, selectPos, setSelectPos, skipTo }) => (
+const ListOLD = ({ queue, queuePos, selectPos, setSelectPos, skipTo }) => (
   <ul>
     {queue.map((item, idx) => (
       <Item
         key={item.id}
         item={item}
         idx={idx}
-        setSelectPos={setSelectPos}
-        skipTo={skipTo}
+        setSelectPos={useCallback(
+          e => {
+            setSelectPos(idx)
+          },
+          [idx]
+        )}
+        skipTo={useCallback(() => skipTo(item.id), [item.id])}
         current={idx === queuePos}
         select={idx === selectPos}
       />
@@ -59,14 +167,16 @@ const Item = ({ item, idx, setSelectPos, skipTo, current, select }) => {
   const child = useMemo(
     () => (
       <QueueItem
-        onDoubleClick={() => skipTo(item.id)}
-        onClick={e => {
-          setSelectPos(idx)
-        }}
+        onDoubleClick={skipTo}
+        onClick={setSelectPos}
         current={current}
         select={select}
       >
-        <Duration current={current} duration={item.duration} />
+        {current ? (
+          <DynamicDuration />
+        ) : (
+          <StaticDuration durationDisplay={item.durationDisplay} />
+        )}
         <Title>{item.title}</Title> <Artist>{item.artist}</Artist>
       </QueueItem>
     ),
@@ -76,14 +186,30 @@ const Item = ({ item, idx, setSelectPos, skipTo, current, select }) => {
   return <>{child}</>
 }
 
-const Duration = ({ current, duration }) => {
+const DynamicDuration = () => {
   const { remaining } = useStore(state => state.seekbar)
-  const time = timeDisplay(current ? remaining : duration)
-  const child = useMemo(() => <DurationStyle>{time}</DurationStyle>, [time])
-  return <>{child}</>
+  return <DurationStyle>{timeDisplay(remaining)}</DurationStyle>
 }
 
+const StaticDuration = ({ durationDisplay }) => (
+  <DurationStyle>{durationDisplay}</DurationStyle>
+)
+
 const QueueWrapper = styled.div`
+  flex-grow: 1;
+  flex-basis: 50px;
+  align-items: center;
+  background-color: #f2e9e1;
+  .keyStepper {
+    height: 100%;
+  }
+  .ps__rail-y,
+  .ps__rail-x {
+    z-index: 5;
+  }
+`
+
+const QueueWrapperOld = styled.div`
   flex-shrink: 1;
   flex-grow: 1;
   display: flex;
@@ -117,4 +243,10 @@ const Artist = styled.span`
 const DurationStyle = styled.span`
   flex-shrink: 0;
   width: 2em;
+`
+
+const AppWrapper = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 `

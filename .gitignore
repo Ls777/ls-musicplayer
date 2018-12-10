@@ -1,5 +1,6 @@
 main/node_modules/
 main/build/
+main/dist/
 renderer/node_modules
 renderer/build
 library.db
