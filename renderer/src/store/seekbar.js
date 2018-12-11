@@ -1,9 +1,11 @@
 import { select, effect } from 'easy-peasy'
+import { timeDisplay } from '../lib/utilities'
 
 export default {
   elapsed: 0,
   duration: 0,
   remaining: select(state => state.duration - state.elapsed),
+  remainingDisplay: select(state => timeDisplay(state.remaining)),
   percentage: select(state => {
     if (state.duration === 0) {
       return 0

@@ -6,6 +6,7 @@ import PerfectScrollbar from 'perfect-scrollbar'
 import 'perfect-scrollbar/css/perfect-scrollbar.css'
 import styled from 'styled-components'
 import { timeDisplay } from '../lib/utilities'
+import KeyboardList from './KeyboardList'
 
 const renderer = ({
   index,
@@ -57,7 +58,6 @@ const renderer = ({
       style={style}
       onClick={onClick}
       onDoubleClick={() => callback(item.id)}
-      onKeyDown={e => console.log(e.key)}
     >
       <div style={itemStyle}>
         {selected && isVisible && !isScrolling ? (
@@ -72,73 +72,25 @@ const renderer = ({
   )
 }
 
-const onKeyDown = ({ e, scrollToRow, scrollToColumn }) => {}
-
 export default () => {
-  const [scrollToIndex, setScrollToIndex] = useState(0)
-  useEffect(() => {
-    const ps = new PerfectScrollbar('.outerScroll')
-  }, [])
-
   const { play, skipTo } = useAction(dispatch => dispatch.player)
 
-  const { queue: list, queuePos } = useStore(state => state.queue)
+  const { queue, queuePos } = useStore(state => state.queue)
 
-  const onKeyDown = ({ event, scrollToRow, scrollToColumn }) => {
+  const onKeyDown = ({ event, scrollToRow }) => {
     if (event.key === 'Enter') {
-      skipTo(list[scrollToRow].id)
+      skipTo(queue[scrollToRow].id)
     }
   }
 
   return (
-    <QueueWrapper>
-      <MyArrowStepper
-        isControlled
-        columnCount={1}
-        rowCount={list.length}
-        mode={'cells'}
-        className={'keyStepper'}
-        onScrollToChange={({ scrollToRow }) => setScrollToIndex(scrollToRow)}
-        scrollToRow={scrollToIndex}
-        onKeyDown={onKeyDown}
-      >
-        {({ onSectionRendered, scrollToRow }) => (
-          <AutoSizer>
-            {({ height, width }) => (
-              <List
-                className={'outerScroll'}
-                rowCount={list.length}
-                height={height}
-                width={width}
-                rowHeight={30}
-                onSectionRendered={onSectionRendered}
-                scrollToIndex={scrollToRow}
-                rowRenderer={({
-                  index,
-                  key,
-                  style,
-                  isScrolling,
-                  isVisible,
-                  parent
-                }) =>
-                  renderer({
-                    key,
-                    style,
-                    focused: index === scrollToIndex,
-                    selected: index === queuePos,
-                    isVisible,
-                    isScrolling,
-                    item: list[index],
-                    onClick: () => setScrollToIndex(index),
-                    callback: skipTo
-                  })
-                }
-              />
-            )}
-          </AutoSizer>
-        )}
-      </MyArrowStepper>
-    </QueueWrapper>
+    <KeyboardList
+      renderer={renderer}
+      onKeyDown={onKeyDown}
+      list={queue}
+      listPos={queuePos}
+      callback={skipTo}
+    />
   )
 }
 
@@ -187,38 +139,13 @@ const Item = ({ item, idx, setSelectPos, skipTo, current, select }) => {
 }
 
 const DynamicDuration = () => {
-  const { remaining } = useStore(state => state.seekbar)
-  return <DurationStyle>{timeDisplay(remaining)}</DurationStyle>
+  const { remainingDisplay } = useStore(state => state.seekbar)
+  return <DurationStyle>{remainingDisplay}</DurationStyle>
 }
 
 const StaticDuration = ({ durationDisplay }) => (
   <DurationStyle>{durationDisplay}</DurationStyle>
 )
-
-const QueueWrapper = styled.div`
-  flex-grow: 1;
-  flex-basis: 50px;
-  align-items: center;
-  background-color: #f2e9e1;
-  .keyStepper {
-    height: 100%;
-  }
-  .ps__rail-y,
-  .ps__rail-x {
-    z-index: 5;
-  }
-`
-
-const QueueWrapperOld = styled.div`
-  flex-shrink: 1;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  background-color: #f2e9e1;
-  ul {
-    margin: 0;
-  }
-`
 
 const QueueItem = styled.li`
   font-weight: ${({ current }) => (current ? 'bold' : 'normal')};

@@ -37,7 +37,7 @@ mpc.on('changed-player', () => {
       if (status.state === 'play') {
         mpc.status
           .currentSong()
-          .then(song => console.log(`Playing '${song.title}'`))
+          .then(song => song && console.log(`Playing '${song.title}'`))
       } else {
         console.log('Stopped playback')
       }
