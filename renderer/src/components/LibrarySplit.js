@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useStore, useAction } from 'easy-peasy'
 import KeyBoardList from './KeyboardList'
 import styled from 'styled-components'
@@ -69,6 +69,8 @@ export default () => {
   const { artistView } = useStore(state => state.library)
   const { replaceQueue } = useAction(dispatch => dispatch.queue)
   const [currentArtist, setCurrentArtist] = useState(0)
+  const pane1 = useRef(null)
+  const pane2 = useRef(null)
   console.log(artistView)
   console.log(currentArtist)
   console.log(artistView[currentArtist])
@@ -79,12 +81,16 @@ export default () => {
   const onKeyDownArtist = ({ event, scrollToRow }) => {
     if (event.key === 'Enter') {
       setCurrentArtist(scrollToRow)
+    } else if (event.key === 'ArrowRight') {
+      pane2.current.focus()
     }
   }
 
   const onKeyDownAlbum = ({ event, scrollToRow }) => {
     if (event.key === 'Enter') {
       replaceQueue([['Album', artistView[currentArtist][1][scrollToRow]]])
+    } else if (event.key === 'ArrowLeft') {
+      pane1.current.focus()
     }
   }
 
@@ -96,6 +102,7 @@ export default () => {
         renderer={renderer}
         callback={setCurrentArtist}
         onKeyDown={onKeyDownArtist}
+        ref={pane1}
       />
       <KeyBoardList
         list={albums}
@@ -103,6 +110,7 @@ export default () => {
         renderer={renderer2}
         callback={replaceQueue}
         onKeyDown={onKeyDownAlbum}
+        ref={pane2}
       />
     </Wrapper>
   )
@@ -110,6 +118,7 @@ export default () => {
 
 const Wrapper = styled.div`
   display: flex;
+  flex-grow: 1;
   height: 400px;
   align-items: stretch;
   background-color: #f2e9e1;

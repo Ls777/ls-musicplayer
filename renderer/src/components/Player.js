@@ -9,7 +9,8 @@ import {
   MdStop,
   MdSkipNext,
   MdSkipPrevious,
-  MdLibraryMusic
+  MdLibraryMusic,
+  MdQueueMusic
 } from 'react-icons/md'
 
 const { ipcRenderer, remote } = window.require('electron')
@@ -21,9 +22,11 @@ const openChildWindow = route => {
 export default () => {
   const { isPlaying } = useStore(state => state.player)
   const { currentTrack } = useStore(state => state.queue)
+  const { display } = useStore(state => state.ui)
   const { play, pause, stop, next, prev, skipTo } = useAction(
     dispatch => dispatch.player
   )
+  const { setQueueView, setLibraryView } = useAction(dispatch => dispatch.ui)
   return (
     <>
       <PlayerWrapper>
@@ -39,8 +42,8 @@ export default () => {
         <Button onClick={next}>
           <MdSkipNext />
         </Button>
-        <Button onClick={() => openChildWindow('library')}>
-          <MdLibraryMusic />
+        <Button onClick={display === 'queue' ? setLibraryView : setQueueView}>
+          {display === 'queue' ? <MdLibraryMusic /> : <MdQueueMusic />}
         </Button>
       </PlayerWrapper>
       <SeekBar />

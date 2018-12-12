@@ -1,6 +1,7 @@
+import React from 'react'
 import { List, ArrowKeyStepper, AutoSizer } from 'react-virtualized'
 
-export default class MyArrowKeyStepper extends ArrowKeyStepper {
+class MyArrowKeyStepper extends ArrowKeyStepper {
   _onKeyDown = event => {
     const { columnCount, disabled, mode, rowCount, onKeyDown } = this.props
 
@@ -53,6 +54,33 @@ export default class MyArrowKeyStepper extends ArrowKeyStepper {
       this._updateScrollState({ scrollToColumn, scrollToRow })
     }
 
-    onKeyDown({ event, scrollToColumn, scrollToRow })
+    if (onKeyDown) {
+      onKeyDown({ event, scrollToColumn, scrollToRow })
+    }
+  }
+
+  render () {
+    const { className, children, innerRef } = this.props
+    const { scrollToColumn, scrollToRow } = this._getScrollState()
+
+    return (
+      <div
+        className={className}
+        onKeyDown={this._onKeyDown}
+        ref={innerRef}
+        tabIndex='0'
+        onBlur={console.log('lost focus')}
+      >
+        {children({
+          onSectionRendered: this._onSectionRendered,
+          scrollToColumn,
+          scrollToRow
+        })}
+      </div>
+    )
   }
 }
+
+export default React.forwardRef((props, ref) => (
+  <MyArrowKeyStepper innerRef={ref} {...props} />
+))

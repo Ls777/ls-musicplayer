@@ -94,58 +94,10 @@ export default () => {
   )
 }
 
-const ListOLD = ({ queue, queuePos, selectPos, setSelectPos, skipTo }) => (
-  <ul>
-    {queue.map((item, idx) => (
-      <Item
-        key={item.id}
-        item={item}
-        idx={idx}
-        setSelectPos={useCallback(
-          e => {
-            setSelectPos(idx)
-          },
-          [idx]
-        )}
-        skipTo={useCallback(() => skipTo(item.id), [item.id])}
-        current={idx === queuePos}
-        select={idx === selectPos}
-      />
-    ))}
-  </ul>
-)
-
-const Item = ({ item, idx, setSelectPos, skipTo, current, select }) => {
-  const child = useMemo(
-    () => (
-      <QueueItem
-        onDoubleClick={skipTo}
-        onClick={setSelectPos}
-        current={current}
-        select={select}
-      >
-        {current ? (
-          <DynamicDuration />
-        ) : (
-          <StaticDuration durationDisplay={item.durationDisplay} />
-        )}
-        <Title>{item.title}</Title> <Artist>{item.artist}</Artist>
-      </QueueItem>
-    ),
-    [item, idx, setSelectPos, skipTo, current, select]
-  )
-
-  return <>{child}</>
-}
-
 const DynamicDuration = () => {
   const { remainingDisplay } = useStore(state => state.seekbar)
   return <DurationStyle>{remainingDisplay}</DurationStyle>
 }
-
-const StaticDuration = ({ durationDisplay }) => (
-  <DurationStyle>{durationDisplay}</DurationStyle>
-)
 
 const QueueItem = styled.li`
   font-weight: ${({ current }) => (current ? 'bold' : 'normal')};

@@ -6,6 +6,7 @@ import useDisableKeyboardScrolling from './hooks/useDisableKeyboardScrolling'
 import SeekBar from './components/SeekBar'
 import Queue from './components/Queue'
 import Library from './components/Library'
+import LibrarySplit from './components/LibrarySplit'
 import Player from './components/Player'
 import TitleBar from './components/TitleBar'
 
@@ -17,10 +18,11 @@ const openChildWindow = route => {
 
 export default () => {
   useDisableKeyboardScrolling()
+  const display = useStore(state => state.ui.display)
   return (
     <App>
       <TitleBar />
-      <Queue />
+      {display === 'queue' ? <Queue /> : <LibrarySplit />}
       <section>
         <Player />
       </section>
