@@ -13,12 +13,16 @@ const KeyBoardList = ({
   renderer,
   callback,
   onKeyDown,
-  innerRef
+  innerRef,
+  disabled
 }) => {
   const [scrollToIndex, setScrollToIndex] = useState(0)
+  const [containerFocused, setContainerFocused] = useState(false)
   const [className] = useState(`id${nanoid()}`)
   useEffect(() => {
-    const ps = new PerfectScrollbar(`.${className}`)
+    const ps = new PerfectScrollbar(`.${className}`, {
+      handlers: ['click-rail', 'drag-thumb', 'wheel', 'touch']
+    })
   }, [])
 
   if (!list) {
@@ -41,11 +45,15 @@ const KeyBoardList = ({
         scrollToRow={scrollToIndex}
         onKeyDown={onKeyDown}
         ref={innerRef}
+        disabled={disabled}
+        onBlur={() => setContainerFocused(false)}
+        onFocus={() => setContainerFocused(true)}
       >
         {({ onSectionRendered, scrollToRow }) => (
           <AutoSizer>
             {({ height, width }) => (
               <List
+                tabIndex={-1}
                 className={className}
                 rowCount={list.length}
                 height={height}
@@ -65,12 +73,12 @@ const KeyBoardList = ({
                     index,
                     key,
                     style,
-                    focused: index === scrollToIndex,
+                    onClick: () => setScrollToIndex(index),
+                    focused: index === scrollToIndex && containerFocused,
                     selected: index === listPos,
                     isVisible,
                     isScrolling,
                     item: list[index],
-                    onClick: () => setScrollToIndex(index),
                     callback
                   })
                 }

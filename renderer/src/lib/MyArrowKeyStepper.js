@@ -60,7 +60,7 @@ class MyArrowKeyStepper extends ArrowKeyStepper {
   }
 
   render () {
-    const { className, children, innerRef } = this.props
+    const { className, children, innerRef, onBlur, onFocus } = this.props
     const { scrollToColumn, scrollToRow } = this._getScrollState()
 
     return (
@@ -69,7 +69,8 @@ class MyArrowKeyStepper extends ArrowKeyStepper {
         onKeyDown={this._onKeyDown}
         ref={innerRef}
         tabIndex='0'
-        onBlur={console.log('lost focus')}
+        onBlur={onBlur || null}
+        onFocus={onFocus || null}
       >
         {children({
           onSectionRendered: this._onSectionRendered,
